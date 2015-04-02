@@ -1,0 +1,10 @@
+﻿<Window x:Class="SpellTextBoxTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:stb="clr-namespace:SpellTextBox;assembly=SpellTextBox"
+        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
+    <Grid>
+        <stb:SpellTextBox DictionaryPath="ru_RU" x:Name="myTextBox" Text="{Binding Path=Text, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" AcceptsReturn="True" 
+                                       VerticalScrollBarVisibility="Visible" TextWrapping="Wrap"/>
+    </Grid>
+</Window>
