@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace SpellTextBox
 {
-    public class SpellTextBox : TextBox, INotifyPropertyChanged
+    public class SpellTextBox : TextBox
     {
         static SpellTextBox()
         {
@@ -76,14 +76,6 @@ namespace SpellTextBox
             }
         }
 
-        void ContextMenu_Opened(object sender, RoutedEventArgs e)
-        {
-            if (sender.GetType() == typeof(ContextMenu))
-            {
-                ((ContextMenu)sender).DataContext = this.DataContext;
-            }
-        }
-
         public void ReplaceSelectedWord(Word WordToReplaceWith)
         {
             if (WordToReplaceWith.Text != StringResources.NoSuggestions)
@@ -92,14 +84,6 @@ namespace SpellTextBox
                 string replacement = WordToReplaceWith.Text;
                 Text = Text.Remove(index, Checker.SelectedMisspelledWord.Length).Insert(index, replacement);
                 SelectionStart = index + WordToReplaceWith.Length;
-            }
-        }
-
-        public List<Word> WordsToUnderline
-        {
-            get
-            {
-                return Checker.MisspelledWords.ToList();
             }
         }
 
@@ -118,13 +102,6 @@ namespace SpellTextBox
                 Checker.SelectedMisspelledWord = Checker.MisspelledWords.First(w => SelectionStart >= w.Index && SelectionStart <= w.Index + w.Length);
             else
                 Checker.SelectedMisspelledWord = null;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string propertyName)
-        {
-            var handler = this.PropertyChanged;
-            if (handler != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private ICommand _replace;

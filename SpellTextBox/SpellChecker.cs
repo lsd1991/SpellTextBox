@@ -21,7 +21,6 @@ namespace SpellTextBox
         private List<Word> ignoredWords;
         private Word selectedMisspelledWord;
         private Word selectedSuggestedWord;
-        private bool isReplaceEnabled;
 
         public SpellChecker(Hunspell HunSpell, SpellTextBox Parent)
         {
@@ -147,21 +146,6 @@ namespace SpellTextBox
             {
                 selectedSuggestedWord = value;
                 OnPropertyChanged("SelectedSuggestedWord");
-                OnPropertyChanged("IsReplaceEnabled");
-            }
-        }
-
-        public bool IsReplaceEnabled
-        {
-            get
-            {
-                return isReplaceEnabled =
-                (!string.IsNullOrEmpty(SelectedMisspelledWord != null ? SelectedMisspelledWord.Text : null)
-                && !string.IsNullOrEmpty(SelectedSuggestedWord != null ? SelectedSuggestedWord.Text : null));
-            }
-            set
-            {
-                isReplaceEnabled = value;
                 OnPropertyChanged("IsReplaceEnabled");
             }
         }

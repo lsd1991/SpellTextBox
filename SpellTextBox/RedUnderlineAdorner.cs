@@ -42,7 +42,7 @@ namespace SpellTextBox
         {
             if (box != null)
             {
-                foreach (var word in box.WordsToUnderline)
+                foreach (var word in box.Checker.MisspelledWords)
                 {
                     Rect startRect = box.GetRectFromCharacterIndex(word.Index);
                     Rect endRect = box.GetRectFromCharacterIndex(word.Index + word.Length);
