@@ -38,6 +38,18 @@ namespace SpellTextBox
             set { this.SetValue(DictionaryPathProperty, value); }
         }
 
+        public static readonly DependencyProperty CustomDictionaryPathProperty =
+            DependencyProperty.Register(
+            "CustomDictionaryPath",
+            typeof(string),
+            typeof(SpellTextBox));
+
+        public string CustomDictionaryPath
+        {
+            get { return (string)this.GetValue(CustomDictionaryPathProperty) ?? "custom.txt"; }
+            set { this.SetValue(CustomDictionaryPathProperty, value); }
+        }
+
         public static readonly DependencyProperty IsSpellCheckEnabledProperty =
             DependencyProperty.Register(
             "IsSpellCheckEnabled",

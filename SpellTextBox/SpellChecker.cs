@@ -194,7 +194,7 @@ namespace SpellTextBox
 
         public void LoadCustomDictionary()
         {
-            string[] strings = File.ReadAllLines("custom.txt");
+            string[] strings = File.ReadAllLines(box.CustomDictionaryPath);
             foreach (var str in strings)
             {
                 hunSpell.Add(str);
@@ -203,7 +203,7 @@ namespace SpellTextBox
 
         public void SaveToCustomDictionary(string word)
         {
-            File.AppendAllText("custom.txt", string.Format("{0}{1}", word.ToLower(), Environment.NewLine));
+            File.AppendAllText(box.CustomDictionaryPath, string.Format("{0}{1}", word.ToLower(), Environment.NewLine));
             hunSpell.Add(word);
         }
 

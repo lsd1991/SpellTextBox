@@ -4,7 +4,8 @@
         xmlns:stb="clr-namespace:SpellTextBox;assembly=SpellTextBox"
         Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
     <Grid>
-        <stb:SpellTextBox DictionaryPath="ru_RU" x:Name="myTextBox" Text="{Binding Path=Text, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" AcceptsReturn="True" 
-                                       IsSpellCheckEnabled="true" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap"/>
+        <stb:SpellTextBox x:Name="myTextBox" DictionaryPath="ru_RU" CustomDictionaryPath="custom.txt"
+                          Text="{Binding Path=Text, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" AcceptsReturn="True"
+                          IsSpellCheckEnabled="true" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap"/>
     </Grid>
 </Window>
