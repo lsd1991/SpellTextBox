@@ -73,17 +73,17 @@ namespace SpellTextBox
                 {
                     commands.Add(new MenuAction()
                     {
-                        Name = "Копировать",
+                        Name = StringResources.Copy,
                         Command = ApplicationCommands.Copy
                     });
                     commands.Add(new MenuAction()
                     {
-                        Name = "Вырезать",
+                        Name = StringResources.Cut,
                         Command = ApplicationCommands.Cut
                     });
                     commands.Add(new MenuAction()
                     {
-                        Name = "Вставить",
+                        Name = StringResources.Paste,
                         Command = ApplicationCommands.Paste
                     });
                 }
@@ -91,7 +91,7 @@ namespace SpellTextBox
                 {
                     commands.Add(new MenuAction()
                     {
-                        Name = "(добавить в словарь)",
+                        Name = StringResources.AddCustom,
                         Command = new DelegateCommand(
                             delegate
                             {
@@ -171,7 +171,7 @@ namespace SpellTextBox
             if (misspelledWord != null)
             {
                 SuggestedWords = new ObservableCollection<Word>(hunSpell.Suggest(misspelledWord.Text).Select(s => new Word(s, misspelledWord.Index)));
-                if (SuggestedWords.Count == 0) SuggestedWords = new ObservableCollection<Word> { new Word("(нет вариантов)", 0) };
+                if (SuggestedWords.Count == 0) SuggestedWords = new ObservableCollection<Word> { new Word(StringResources.NoSuggestions, 0) };
             }
             else
             {

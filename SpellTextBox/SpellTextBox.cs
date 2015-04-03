@@ -86,7 +86,7 @@ namespace SpellTextBox
 
         public void ReplaceSelectedWord(Word WordToReplaceWith)
         {
-            if (WordToReplaceWith.Text != "(нет вариантов)")
+            if (WordToReplaceWith.Text != StringResources.NoSuggestions)
             {
                 int index = Checker.SelectedMisspelledWord.Index;
                 string replacement = WordToReplaceWith.Text;
