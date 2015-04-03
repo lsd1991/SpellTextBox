@@ -23,7 +23,7 @@ namespace SpellTextBox
 
         private static void TextPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
-            ((SpellTextBox)sender).Checker.CheckSpelling(((SpellTextBox)sender).Text);
+                ((SpellTextBox)sender).Checker.CheckSpelling(((SpellTextBox)sender).Text);
         }
 
         public static readonly DependencyProperty DictionaryPathProperty =
@@ -36,6 +36,18 @@ namespace SpellTextBox
         {
             get { return (string)this.GetValue(DictionaryPathProperty); }
             set { this.SetValue(DictionaryPathProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsSpellCheckEnabledProperty =
+            DependencyProperty.Register(
+            "IsSpellCheckEnabled",
+            typeof(bool),
+            typeof(SpellTextBox));
+
+        public bool IsSpellCheckEnabled
+        {
+            get { return (bool)this.GetValue(IsSpellCheckEnabledProperty); }
+            set { this.SetValue(IsSpellCheckEnabledProperty, value); }
         }
 
         public void Initialize()

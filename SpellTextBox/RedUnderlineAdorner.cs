@@ -40,7 +40,7 @@ namespace SpellTextBox
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            if (box != null)
+            if (box != null && box.IsSpellCheckEnabled)
             {
                 foreach (var word in box.Checker.MisspelledWords)
                 {

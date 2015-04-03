@@ -171,22 +171,25 @@ namespace SpellTextBox
 
         public void CheckSpelling(string content)
         {
-            ClearLists();
-
-            var matches = Regex.Matches(content, @"\w+[^\s]*\w+|\w");
-
-            foreach (Match match in matches)
+            if (box.IsSpellCheckEnabled)
             {
-                Words.Add(new Word(match.Value.Trim(), match.Index));
-            }
+                ClearLists();
 
-            foreach (var word in Words)
-            {
-                bool isExist = hunSpell.Spell(word.Text);
-                if (!isExist) MisspelledWords.Add(word);
-            }
+                var matches = Regex.Matches(content, @"\w+[^\s]*\w+|\w");
 
-            OnPropertyChanged("MisspelledWords");
+                foreach (Match match in matches)
+                {
+                    Words.Add(new Word(match.Value.Trim(), match.Index));
+                }
+
+                foreach (var word in Words)
+                {
+                    bool isExist = hunSpell.Spell(word.Text);
+                    if (!isExist) MisspelledWords.Add(word);
+                }
+
+                OnPropertyChanged("MisspelledWords");
+            }
         }
 
         public void LoadCustomDictionary()
