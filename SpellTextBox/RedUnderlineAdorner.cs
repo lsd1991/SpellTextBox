@@ -38,18 +38,38 @@ namespace SpellTextBox
             box.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)InvalidateVisual);
         }
 
+        DependencyObject GetTopLevelControl(DependencyObject control)
+        {
+            DependencyObject tmp = control;
+            DependencyObject parent = null;
+            while ((tmp = VisualTreeHelper.GetParent(tmp)) != null)
+            {
+                parent = tmp;
+            }
+            return parent;
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (box != null && box.IsSpellCheckEnabled)
             {
                 foreach (var word in box.Checker.MisspelledWords)
                 {
+                    Rect rectangleBounds = new Rect();
+                    rectangleBounds = box.TransformToVisual(GetTopLevelControl(box) as Visual).TransformBounds(LayoutInformation.GetLayoutSlot(box));
+
                     Rect startRect = box.GetRectFromCharacterIndex(word.Index);
                     Rect endRect = box.GetRectFromCharacterIndex(word.Index + word.Length);
 
-                    Rect rectangleBounds = new Rect();
-                    rectangleBounds = box.TransformToVisual(VisualTreeHelper.GetParent(box) as Visual).TransformBounds(LayoutInformation.GetLayoutSlot(box));
-                    if (rectangleBounds.Contains(startRect) && rectangleBounds.Contains(endRect))
+                    Rect startRectM = box.GetRectFromCharacterIndex(word.Index);
+                    Rect endRectM = box.GetRectFromCharacterIndex(word.Index + word.Length);
+
+                    startRectM.X += rectangleBounds.X;
+                    startRectM.Y += rectangleBounds.Y;
+                    endRectM.X += rectangleBounds.X;
+                    endRectM.Y += rectangleBounds.Y;
+
+                    if (rectangleBounds.Contains(startRectM) && rectangleBounds.Contains(endRectM))
                         drawingContext.DrawLine(pen, startRect.BottomLeft, endRect.BottomRight);
                 }
             }
