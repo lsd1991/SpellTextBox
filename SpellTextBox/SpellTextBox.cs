@@ -19,12 +19,55 @@ namespace SpellTextBox
         public SpellTextBox() : base()
         {
             this.SelectionChanged += this.OnSelectionChanged;
+            CreateTimer();
+        }
+
+        #region Timer
+
+        static System.Timers.Timer timer = new System.Timers.Timer(500);
+
+        void CreateTimer()
+        {
+            timer.AutoReset = false;
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
         }
 
         private static void TextPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
-                ((SpellTextBox)sender).Checker.CheckSpelling(((SpellTextBox)sender).Text);
+            timer.Stop();
+            timer.Start();
         }
+
+        private void timer_Elapsed(object sender,
+        System.Timers.ElapsedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(new System.Action(() => 
+            { 
+                Checker.CheckSpelling(Text);
+                RaiseSpellcheckCompletedEvent();
+            }));
+        }
+
+        #endregion
+
+        #region SpellcheckCompleted Event
+
+        public static readonly RoutedEvent SpellcheckCompletedEvent = EventManager.RegisterRoutedEvent(
+            "SpellcheckCompleted", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(SpellTextBox));
+
+        public event RoutedEventHandler SpellcheckCompleted
+        {
+            add { AddHandler(SpellcheckCompletedEvent, value); }
+            remove { RemoveHandler(SpellcheckCompletedEvent, value); }
+        }
+
+        void RaiseSpellcheckCompletedEvent()
+        {
+            RoutedEventArgs newEventArgs = new RoutedEventArgs(SpellTextBox.SpellcheckCompletedEvent);
+            RaiseEvent(newEventArgs);
+        }
+
+        #endregion
 
         public static readonly DependencyProperty DictionaryPathProperty =
             DependencyProperty.Register(

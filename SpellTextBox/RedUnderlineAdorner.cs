@@ -12,12 +12,12 @@ namespace SpellTextBox
     {
         public RedUnderlineAdorner(SpellTextBox textbox) : base(textbox)
         {
-            textbox.TextChanged += delegate
+            textbox.SizeChanged += delegate
             {
                 SignalInvalidate();
             };
 
-            textbox.SizeChanged += delegate
+            textbox.SpellcheckCompleted += delegate
             {
                 SignalInvalidate();
             };
@@ -58,11 +58,11 @@ namespace SpellTextBox
                     Rect rectangleBounds = new Rect();
                     rectangleBounds = box.TransformToVisual(GetTopLevelControl(box) as Visual).TransformBounds(LayoutInformation.GetLayoutSlot(box));
 
-                    Rect startRect = box.GetRectFromCharacterIndex(word.Index);
-                    Rect endRect = box.GetRectFromCharacterIndex(word.Index + word.Length);
+                    Rect startRect = box.GetRectFromCharacterIndex((Math.Min(word.Index,  box.Text.Length)));
+                    Rect endRect = box.GetRectFromCharacterIndex(Math.Min(word.Index + word.Length, box.Text.Length));
 
-                    Rect startRectM = box.GetRectFromCharacterIndex(word.Index);
-                    Rect endRectM = box.GetRectFromCharacterIndex(word.Index + word.Length);
+                    Rect startRectM = box.GetRectFromCharacterIndex((Math.Min(word.Index, box.Text.Length)));
+                    Rect endRectM = box.GetRectFromCharacterIndex(Math.Min(word.Index + word.Length, box.Text.Length));
 
                     startRectM.X += rectangleBounds.X;
                     startRectM.Y += rectangleBounds.Y;
