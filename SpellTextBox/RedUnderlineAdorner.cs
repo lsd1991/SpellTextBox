@@ -77,15 +77,17 @@ namespace SpellTextBox
 
         private static Pen CreateErrorPen()
         {
+            double size = 4.0;
+
             var geometry = new StreamGeometry();
             using (var context = geometry.Open())
             {
                 context.BeginFigure(new Point(0.0, 0.0), false, false);
                 context.PolyLineTo(new[] {
-                    new Point(0.75, 0.75),
-                    new Point(1.5, 0.0),
-                    new Point(2.25, 0.75),
-                    new Point(3.0, 0.0)
+                    new Point(size * 0.25, size * 0.25),
+                    new Point(size * 0.5, 0.0),
+                    new Point(size * 0.75, size * 0.25),
+                    new Point(size, 0.0)
                 }, true, true);
             }
 
@@ -98,11 +100,11 @@ namespace SpellTextBox
             var brush = new DrawingBrush(brushPattern)
             {
                 TileMode = TileMode.Tile,
-                Viewport = new Rect(0.0, 1.5, 9.0, 3.0),
+                Viewport = new Rect(0.0, size * 0.33, size * 3.0, size),
                 ViewportUnits = BrushMappingMode.Absolute
             };
 
-            var pen = new Pen(brush, 3.0);
+            var pen = new Pen(brush, size);
             pen.Freeze();
 
             return pen;
