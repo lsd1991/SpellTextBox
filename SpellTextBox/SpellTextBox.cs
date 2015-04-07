@@ -131,8 +131,8 @@ namespace SpellTextBox
             myAdornerLayer.Remove(myAdorner);
             this.SelectionChanged -= this.OnSelectionChanged;
             timer.Elapsed -= TimerOnElapse;
+            checker.Dispose();
         }
-
 
         private SpellChecker checker;
 

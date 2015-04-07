@@ -32,6 +32,11 @@ namespace SpellTextBox
             SuggestedWords = new ObservableCollection<Word>();
         }
 
+        public void Dispose()
+        {
+            hunSpell.Dispose();
+        }
+
         public List<Word> Words
         {
             get { return words; }
