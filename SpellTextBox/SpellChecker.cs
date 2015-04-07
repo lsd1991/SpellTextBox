@@ -34,7 +34,8 @@ namespace SpellTextBox
 
         public void Dispose()
         {
-            hunSpell.Dispose();
+            if (hunSpell != null)
+                hunSpell.Dispose();
         }
 
         public List<Word> Words
@@ -99,7 +100,7 @@ namespace SpellTextBox
                         Command = new DelegateCommand(
                             delegate
                             {
-                                SaveToCustomDictionary(SelectedMisspelledWord.Text);
+                                SaveToCustomDictionary(SelectedMisspelledWord);
 
                                 box.FireTextChangeEvent();
                             })
@@ -117,7 +118,6 @@ namespace SpellTextBox
             {
                 suggestedWords = value;
                 OnPropertyChanged("SuggestedWords");
-                box.CreateContextMenu();
             }
         }
 
@@ -140,7 +140,6 @@ namespace SpellTextBox
                 LoadSuggestions(value);
                 OnPropertyChanged("SelectedMisspelledWord");
                 OnPropertyChanged("IsReplaceEnabled");
-                box.CreateContextMenu();
             }
         }
 
@@ -166,6 +165,7 @@ namespace SpellTextBox
             {
                 SuggestedWords = new ObservableCollection<Word>();
             }
+            OnPropertyChanged("SuggestedWords");
         }
 
         public void ClearLists()
@@ -189,11 +189,19 @@ namespace SpellTextBox
 
                 foreach (var word in Words)
                 {
-                    bool isExist = hunSpell.Spell(word.Text);
-                    if (!isExist) MisspelledWords.Add(word);
+                    bool isIgnored = IgnoredWords.Contains(word);
+                    if (!isIgnored)
+                    {
+                        bool exists = hunSpell.Spell(word.Text);
+                        if (exists)
+                            IgnoredWords.Add(word);
+                        else
+                            MisspelledWords.Add(word);
+                    }
                 }
 
                 OnPropertyChanged("MisspelledWords");
+                OnPropertyChanged("IgnoredWords");
             }
         }
 
@@ -206,10 +214,11 @@ namespace SpellTextBox
             }
         }
 
-        public void SaveToCustomDictionary(string word)
+        public void SaveToCustomDictionary(Word word)
         {
-            File.AppendAllText(box.CustomDictionaryPath, string.Format("{0}{1}", word.ToLower(), Environment.NewLine));
-            hunSpell.Add(word);
+            File.AppendAllText(box.CustomDictionaryPath, string.Format("{0}{1}", word.Text.ToLower(), Environment.NewLine));
+            hunSpell.Add(word.Text);
+            IgnoredWords.Add(word);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

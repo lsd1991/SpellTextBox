@@ -19,8 +19,12 @@ namespace SpellTextBox
 
         public SpellTextBox() : base()
         {
-            SelectionChanged += OnSelectionChanged;
             CreateTimer();
+
+            var cm = new ContextMenu();
+            this.ContextMenu = cm;
+            this.ContextMenu.Opened += OnContextMenuOpening;
+
             Loaded += (s, e) =>
             {
                 Initialize();
@@ -31,23 +35,24 @@ namespace SpellTextBox
 
         #region Timer
 
-        static Timer timer = new System.Timers.Timer(500);
-        ElapsedEventHandler TimerOnElapse;
+        static Timer textChangedTimer = new System.Timers.Timer(500);
+        ElapsedEventHandler textChangedTimerOnElapse;
 
         void CreateTimer()
         {
-            timer.AutoReset = false;
-            TimerOnElapse = new ElapsedEventHandler(timer_Elapsed);
-            timer.Elapsed += TimerOnElapse;
+            textChangedTimer.AutoReset = false;
+            textChangedTimerOnElapse = new ElapsedEventHandler(textChangedTimer_Elapsed);
+            textChangedTimer.Elapsed += textChangedTimerOnElapse;
+
         }
 
         private static void TextPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
-            timer.Stop();
-            timer.Start();
+            textChangedTimer.Stop();
+            textChangedTimer.Start();
         }
 
-        private void timer_Elapsed(object sender,
+        private void textChangedTimer_Elapsed(object sender,
         System.Timers.ElapsedEventArgs e)
         {
             Application.Current.Dispatcher.Invoke(new System.Action(() => 
@@ -77,6 +82,23 @@ namespace SpellTextBox
         }
 
         #endregion
+
+        protected void OnContextMenuOpening(object sender, RoutedEventArgs e)
+        {
+            if (Checker.MisspelledWords.Any(w => SelectionStart >= w.Index && SelectionStart <= w.Index + w.Length))
+                Checker.SelectedMisspelledWord = Checker.MisspelledWords.First(w => SelectionStart >= w.Index && SelectionStart <= w.Index + w.Length);
+            else
+                Checker.SelectedMisspelledWord = null;
+
+            this.ContextMenu.Items.Clear();
+            foreach (var item in Checker.MenuActions)
+            {
+                var mi = new MenuItem();
+                mi.Header = item.Name;
+                mi.Command = item.Command;
+                this.ContextMenu.Items.Add(mi);
+            }
+        }
 
         public static readonly DependencyProperty DictionaryPathProperty =
             DependencyProperty.Register(
@@ -122,16 +144,16 @@ namespace SpellTextBox
             myAdornerLayer = AdornerLayer.GetAdornerLayer(this);
             myAdorner = new RedUnderlineAdorner(this);
             myAdornerLayer.Add(myAdorner);
-            CreateContextMenu();
         }
 
         public void Dispose()
         {
             myAdorner.Dispose();
             myAdornerLayer.Remove(myAdorner);
-            this.SelectionChanged -= this.OnSelectionChanged;
-            timer.Elapsed -= TimerOnElapse;
-            checker.Dispose();
+            this.ContextMenu.Opened -= OnContextMenuOpening;
+            textChangedTimer.Elapsed -= textChangedTimerOnElapse;
+            if (checker != null)
+                checker.Dispose();
         }
 
         private SpellChecker checker;
@@ -147,22 +169,6 @@ namespace SpellTextBox
             checker = new SpellChecker(new Hunspell(DictionaryPath + ".aff", DictionaryPath + ".dic"), this);
             checker.LoadCustomDictionary();
             return checker;
-        }
-
-        public void CreateContextMenu()
-        {
-            if (checker != null)
-            {
-                var cm = new ContextMenu();
-                foreach (var item in Checker.MenuActions)
-                {
-                    var mi = new MenuItem();
-                    mi.Header = item.Name;
-                    mi.Command = item.Command;
-                    cm.Items.Add(mi);
-                }
-                this.ContextMenu = cm;
-            }
         }
 
         public void ReplaceSelectedWord(Word WordToReplaceWith)
@@ -183,14 +189,6 @@ namespace SpellTextBox
             Text = s + " ";
             Text = s;
             SelectionStart = c;
-        }
-
-        protected void OnSelectionChanged(object sender, RoutedEventArgs e)
-        {
-            if (Checker.MisspelledWords.Any(w => SelectionStart >= w.Index && SelectionStart <= w.Index + w.Length))
-                Checker.SelectedMisspelledWord = Checker.MisspelledWords.First(w => SelectionStart >= w.Index && SelectionStart <= w.Index + w.Length);
-            else
-                Checker.SelectedMisspelledWord = null;
         }
 
         private ICommand _replace;
