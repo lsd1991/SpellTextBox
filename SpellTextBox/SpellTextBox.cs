@@ -48,6 +48,7 @@ namespace SpellTextBox
 
         private static void TextPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
+            ((SpellTextBox)sender).IsSpellcheckCompleted = false;
             textChangedTimer.Stop();
             textChangedTimer.Start();
         }
@@ -56,7 +57,7 @@ namespace SpellTextBox
         System.Timers.ElapsedEventArgs e)
         {
             Application.Current.Dispatcher.Invoke(new System.Action(() => 
-            { 
+            {
                 Checker.CheckSpelling(Text);
                 RaiseSpellcheckCompletedEvent();
             }));
@@ -79,7 +80,10 @@ namespace SpellTextBox
         {
             RoutedEventArgs newEventArgs = new RoutedEventArgs(SpellTextBox.SpellcheckCompletedEvent);
             RaiseEvent(newEventArgs);
+            IsSpellcheckCompleted = true;
         }
+
+        public bool IsSpellcheckCompleted { get; set; }
 
         #endregion
 

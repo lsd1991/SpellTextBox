@@ -75,7 +75,7 @@ namespace SpellTextBox
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            if (box != null && box.IsSpellCheckEnabled)
+            if (box != null && box.IsSpellCheckEnabled && box.IsSpellcheckCompleted)
             {
                 foreach (var word in box.Checker.MisspelledWords)
                 {
