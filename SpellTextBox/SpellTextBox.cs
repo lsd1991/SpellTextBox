@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Timers;
 
 namespace SpellTextBox
 {
@@ -18,18 +19,26 @@ namespace SpellTextBox
 
         public SpellTextBox() : base()
         {
-            this.SelectionChanged += this.OnSelectionChanged;
+            SelectionChanged += OnSelectionChanged;
             CreateTimer();
+            Loaded += (s, e) =>
+            {
+                Initialize();
+                if (Window.GetWindow(this) != null)
+                    Window.GetWindow(this).Closing += (s1, e1) => Dispose();
+            };
         }
 
         #region Timer
 
-        static System.Timers.Timer timer = new System.Timers.Timer(500);
+        static Timer timer = new System.Timers.Timer(500);
+        ElapsedEventHandler TimerOnElapse;
 
         void CreateTimer()
         {
             timer.AutoReset = false;
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
+            TimerOnElapse = new ElapsedEventHandler(timer_Elapsed);
+            timer.Elapsed += TimerOnElapse;
         }
 
         private static void TextPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
@@ -105,12 +114,25 @@ namespace SpellTextBox
             set { this.SetValue(IsSpellCheckEnabledProperty, value); }
         }
 
+        AdornerLayer myAdornerLayer;
+        RedUnderlineAdorner myAdorner;
+
         public void Initialize()
         {
-            var myAdornerLayer = AdornerLayer.GetAdornerLayer(this);
-            myAdornerLayer.Add(new RedUnderlineAdorner(this));
+            myAdornerLayer = AdornerLayer.GetAdornerLayer(this);
+            myAdorner = new RedUnderlineAdorner(this);
+            myAdornerLayer.Add(myAdorner);
             CreateContextMenu();
         }
+
+        public void Dispose()
+        {
+            myAdorner.Dispose();
+            myAdornerLayer.Remove(myAdorner);
+            this.SelectionChanged -= this.OnSelectionChanged;
+            timer.Elapsed -= TimerOnElapse;
+        }
+
 
         private SpellChecker checker;
 

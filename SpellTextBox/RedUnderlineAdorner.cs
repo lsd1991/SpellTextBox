@@ -10,27 +10,51 @@ namespace SpellTextBox
 {
     public class RedUnderlineAdorner : Adorner
     {
+        SizeChangedEventHandler sizeChangedEventHandler;
+        RoutedEventHandler routedEventHandler;
+        ScrollChangedEventHandler scrollChangedEventHandler;
+
         public RedUnderlineAdorner(SpellTextBox textbox) : base(textbox)
         {
-            textbox.SizeChanged += delegate
-            {
-                SignalInvalidate();
-            };
 
-            textbox.SpellcheckCompleted += delegate
-            {
-                SignalInvalidate();
-            };
 
-            textbox.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(
+            sizeChangedEventHandler = new SizeChangedEventHandler(
                 delegate 
                 {
                     SignalInvalidate();
-                }));
+                });
+
+            routedEventHandler = new RoutedEventHandler(
+                delegate
+                {
+                    SignalInvalidate();
+                });
+
+            scrollChangedEventHandler = new ScrollChangedEventHandler(
+                delegate 
+                {
+                    SignalInvalidate();
+                });
+
+            textbox.SizeChanged += sizeChangedEventHandler;
+
+            textbox.SpellcheckCompleted += routedEventHandler;
+
+            textbox.AddHandler(ScrollViewer.ScrollChangedEvent, scrollChangedEventHandler);
         }
 
         SpellTextBox box;
         Pen pen = CreateErrorPen();
+
+        public void Dispose()
+        {
+            if (box != null)
+            {
+                box.SizeChanged -= sizeChangedEventHandler;
+                box.SpellcheckCompleted -= routedEventHandler;
+                box.RemoveHandler(ScrollViewer.ScrollChangedEvent, scrollChangedEventHandler);
+            }
+        }
 
         void SignalInvalidate()
         {
